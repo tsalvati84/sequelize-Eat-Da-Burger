@@ -1,26 +1,28 @@
-var orm = require("../config/orm.js");
-
-var burger = {
-  all: function(cb) {
-    orm.all("burgers", function(res) {
-      cb(res);
+module.exports = (sequelize, DataTypes) => {
+  var Burger = sequelize.define(
+    "Burger",
+    {
+      burger_name: {
+        type: DataTypes.STRING,
+        allowNUll: false,
+        validate: {
+          len: [1, 100]
+        }
+      },
+      devoured: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+      }
     });
-  },
+  Burger.associate = models => {
+    Burger.belongsTo(models.Customer, {
+      foreignKey: {
+        allowNull: true
+      }
+    });
+  };
+  return Burger;
 
-  create: function(name, cb) {
-    orm.create("burgers", [
-      "burger_name", "devoured"
-    ], [
-      name, false
-    ], cb);
-  },
-  
-  update: function(id, cb) {
-    var condition = "id=" + id;
-    orm.update("burgers", {
-      devoured: true
-    }, condition, cb);
-  }
 };
 
-module.exports = burger;
